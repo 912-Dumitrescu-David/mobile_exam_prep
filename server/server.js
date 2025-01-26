@@ -62,7 +62,7 @@ app.delete('/entities/:id', (req, res) => {
   const id = req.params.id;
 
   // Find the index of the entity
-  const index = TestEntities.findIndex((TestEntity) => TestEntity.id === id);
+  const index = TestEntities.findIndex((TestEntity) => TestEntity.id == id);
   if (index === -1) {
     return res.status(404).json({message: "balls"  });
   }
