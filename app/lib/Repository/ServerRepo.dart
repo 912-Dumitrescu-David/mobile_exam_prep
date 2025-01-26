@@ -41,5 +41,9 @@ class ServerRepo {
     final response = await dio.delete('$url/entities/$id');
     logger.log(Level.info, "$response");
   }
+
+  Future<void> updateEntity(int id, TestEntity newEntity) async{
+    final response = await dio.put('$url/entities/$id', data: newEntity.toJson());
+  }
   
 }

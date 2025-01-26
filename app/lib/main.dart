@@ -11,7 +11,9 @@ void main() async {
     ServerRepo serverRepo = ServerRepo();
     await serverRepo.addEntity(TestEntity(id: 1, name:"David Razvan"));
     await serverRepo.getAllEntities();
-    await serverRepo.deleteEntity(1);
+    await serverRepo.updateEntity(1, TestEntity(id: 3, name: "Dav"));
+    // await serverRepo.deleteEntity(1);
+
   runApp(const MyApp());
 }
 

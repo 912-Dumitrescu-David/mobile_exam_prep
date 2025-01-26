@@ -47,7 +47,7 @@ app.put('/entities/:id', (req, res) => {
   }
 
   // Find the entity
-  const TestEntity = TestEntities.find((TestEntity) => TestEntity.id === id);
+  const TestEntity = TestEntities.find((TestEntity) => TestEntity.id == id);
   if (!TestEntity) {
     return res.status(404).json({  });
   }
