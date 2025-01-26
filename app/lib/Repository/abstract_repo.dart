@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:app/Model/entity.dart';
 import 'package:logger/logger.dart';
@@ -34,7 +32,6 @@ class Abstractrepo {
         createString += key + value;
       });
       createString += ' );';
-      print(createString);
 
       _database = await openDatabase(
         path,
@@ -128,7 +125,5 @@ class Abstractrepo {
       {'id': 2, 'name': 'Jane Smith'},
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-
-    print("Mock data added to EXAM table.");
   }
 }

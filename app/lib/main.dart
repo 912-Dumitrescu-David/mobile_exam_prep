@@ -1,7 +1,7 @@
-import 'package:app/Controller/Controller.dart';
+import 'package:app/Controller/controller.dart';
 import 'package:app/Model/entity.dart';
-import 'package:app/Repository/AbstractRepo.dart';
-import 'package:app/Repository/ServerRepo.dart';
+import 'package:app/Repository/abstract_repo.dart';
+import 'package:app/Repository/server_repo.dart';
 import 'package:flutter/material.dart';
 
 void main() async {

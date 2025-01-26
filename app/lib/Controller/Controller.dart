@@ -1,6 +1,6 @@
 import 'package:app/Model/entity.dart';
-import 'package:app/Repository/AbstractRepo.dart';
-import 'package:app/Repository/ServerRepo.dart';
+import 'package:app/Repository/abstract_repo.dart';
+import 'package:app/Repository/server_repo.dart';
 import 'package:logger/logger.dart';
 
 class Controller {
@@ -24,20 +24,19 @@ class Controller {
     return entities;
   }
 
-  Future<TestEntity> addEntity(TestEntity entity) async{
+  Future<TestEntity> addEntity(TestEntity entity) async {
     TestEntity addedEntity;
     logger.log(Level.info, "Called addEntity in Service");
     if(isOnline){
-      //TODO logs
+      logger.log(Level.info, "addEntity called on server");
       addedEntity = await serverRepo.addEntity(entity);
-    }
-    else{
-      //TODO logs
+    } else {
+      logger.log(Level.info, "addEntity called on local");
       addedEntity = await localRepo.addEntity(entity);
     }
+    logger.log(Level.info, "addEntity result: $entity");
     return addedEntity;
   }
-
 
   Future<TestEntity?> getById(int id) async {
     TestEntity? entity;
