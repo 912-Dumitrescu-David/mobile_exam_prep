@@ -64,7 +64,7 @@ class Abstractrepo {
     return result.map((json) => TestEntity.fromJson(json)).toList();
   }
 
-  Future<void> addEntity(TestEntity entity) async {
+  Future<TestEntity> addEntity(TestEntity entity) async {
     final db = await database;
     try {
       final id = await db.insert("Exam", entity.toJson());
@@ -72,26 +72,31 @@ class Abstractrepo {
     } catch (e) {
       logger.log(Level.error, "addEntity() failed: $e");
     }
+    return entity;
   }
 
-  Future<void> deleteEntity(int id) async {
+  Future<bool> deleteEntity(int id) async {
     final db = await database;
     try {
       int count = await db.delete("Exam", where: "id =?", whereArgs: [id]);
       logger.log(Level.info, "deleteEntity() result: deleted $count entries");
+      return true;
     } catch (e) {
       logger.log(Level.error, "deleteEntity() failed: $e");
+      return false;
     }
   }
 
-  Future<void> updatedEntity(TestEntity newEntity) async {
+  Future<bool> updatedEntity(TestEntity newEntity) async {
     final db = await database;
     try {
       int changes = await db.update("Exam", newEntity.toJson(),
           where: "id =?", whereArgs: [newEntity.id]);
       logger.log(Level.info, "updateEntity() result: made $changes changes");
+      return true;
     } catch (e) {
       logger.log(Level.error, "updateEntity() error: $e");
+      return false;
     }
   }
 

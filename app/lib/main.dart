@@ -1,3 +1,4 @@
+import 'package:app/Controller/Controller.dart';
 import 'package:app/Model/entity.dart';
 import 'package:app/Repository/AbstractRepo.dart';
 import 'package:app/Repository/ServerRepo.dart';
@@ -5,14 +6,20 @@ import 'package:flutter/material.dart';
 
 void main() async {
     Abstractrepo repo = Abstractrepo();
-    await repo.initDb();
+    // await repo.initDb();
     await repo.updatedEntity(TestEntity(id: 3, name: "Razvan"));
-    await repo.getEntityById(1);
+    // await repo.getEntityById(1);
     ServerRepo serverRepo = ServerRepo();
     await serverRepo.addEntity(TestEntity(id: 1, name:"David Razvan"));
-    await serverRepo.getAllEntities();
-    await serverRepo.updateEntity(1, TestEntity(id: 3, name: "Dav"));
+    // await serverRepo.getAllEntities();
+    // await serverRepo.updateEntity(1, TestEntity(id: 3, name: "Dav"));
     // await serverRepo.deleteEntity(1);
+    bool isOnline = true;
+    Controller controller = Controller(localRepo: repo, serverRepo: serverRepo, isOnline: isOnline);
+    await controller.getAllEntities();
+    await controller.addEntity(TestEntity(id: 10, name: "Test"));
+    await controller.updateEntity(TestEntity(id: 10, name: "TestUpdate"));
+    await controller.deleteEntity(10);
 
   runApp(const MyApp());
 }
