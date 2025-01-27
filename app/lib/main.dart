@@ -10,9 +10,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Abstractrepo repo = Abstractrepo();
+  repo.initDb();
   ServerRepo serverRepo = ServerRepo();
-  WebSocketService ws = WebSocketService(serverUrl: 'ws://192.168.1.14:3000');
-
+  WebSocketService ws = WebSocketService(serverUrl: 'ws://192.168.1.132:3000');
+  // repo.clearAllEntities();
   Controller.initialize(localRepo: repo, serverRepo: serverRepo, isOnline: ws.isConnected);
 
   runApp(const MyApp());

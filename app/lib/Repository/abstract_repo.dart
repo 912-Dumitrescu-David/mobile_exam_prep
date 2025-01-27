@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app/Model/entity.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 // import 'package:sqflite/sqflite.dart';
 // import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -19,7 +20,7 @@ class Abstractrepo {
         databaseFactory = databaseFactoryFfi;
       }
       final dbPath = await getDatabasesPath();
-      final path = join(dbPath, 'entity.db');
+      final path = join(dbPath, 'entity4.db');
 
       if (_database != null) return;
 
@@ -124,6 +125,33 @@ class Abstractrepo {
       return null;
     }
   }
+
+  Future<bool> clearAllEntities() async {
+    final db = await database;
+    try {
+      int count = await db.delete("Exam");
+      logger.log(Level.info, "clearAllEntities() result: deleted $count entries");
+      return true;
+    } catch (e) {
+      logger.log(Level.error, "clearAllEntities() failed: $e");
+      return false;
+    }
+  }
+
+  Future<bool> isTableEmpty() async {
+  final db = await database;
+  try {
+    // Get the count of records
+    final result = await db.rawQuery('SELECT COUNT(*) as count FROM Exam');
+    final count = Sqflite.firstIntValue(result) ?? 0;
+    
+    logger.log(Level.info, "isTableEmpty() check result: count = $count");
+    return count == 0;
+  } catch (e) {
+    logger.log(Level.error, "isTableEmpty() check failed: $e");
+    rethrow;
+  }
+}
 
   Future<void> _addMockData() async {
     final db = await database;

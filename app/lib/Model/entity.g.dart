@@ -9,10 +9,12 @@ part of 'entity.dart';
 TestEntity _$TestEntityFromJson(Map<String, dynamic> json) => TestEntity(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
+      filter: json['filter'] as String?,
     );
 
 Map<String, dynamic> _$TestEntityToJson(TestEntity instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'filter': instance.filter,
     };

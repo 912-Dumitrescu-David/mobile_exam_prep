@@ -60,13 +60,25 @@ class Controller {
     return _instance!;
   }
 
+  Future<List<TestEntity>> fetchEntities() async {
+    if (isOnline()) {
+      localRepo.clearAllEntities();
+      var newEntities = await serverRepo.getAllEntities();
+      for (var ent in newEntities) {
+        localRepo.addEntity(ent);
+      }
+    }
+    return localRepo.getAllEntities();
+  }
+
   Future<List<TestEntity>> getAllEntities() async {
     List<TestEntity> entities = [];
     logger.log(Level.info, "Called getAllEntities in Service");
-    if (isOnline()) {
-      entities = await serverRepo.getAllEntities();
-      logger.log(
-          Level.info, "getAllEntities called from server result: $entities");
+    final isEmpty = await localRepo.isTableEmpty();
+    if (isEmpty && isOnline()) {
+      await fetchEntities();
+    } else {
+      print('Table has records');
     }
     entities = await localRepo.getAllEntities();
     logger.log(
