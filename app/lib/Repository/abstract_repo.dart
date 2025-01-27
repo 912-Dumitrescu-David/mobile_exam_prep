@@ -41,7 +41,7 @@ class Abstractrepo {
           await db.execute(createString);
         },
       );
-      await _addMockData();
+      // await _addMockData();
     } catch (e) {
       // ignore: avoid_print
       print(e);

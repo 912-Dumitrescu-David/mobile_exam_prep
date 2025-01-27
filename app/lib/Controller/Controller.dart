@@ -2,6 +2,7 @@ import 'package:app/Model/entity.dart';
 import 'package:app/Repository/abstract_repo.dart';
 import 'package:app/Repository/server_repo.dart';
 import 'package:logger/logger.dart';
+import 'package:app/Model/entityfilter.dart';
 
 class Controller {
   final Abstractrepo localRepo;
@@ -138,4 +139,23 @@ class Controller {
     logger.log(Level.info, "updateEntity result: $result");
     return result;
   }
+
+  Future<List<String?>> getAllFilters() async {
+    List<String?> filters = [];
+    logger.log(Level.info, "Called getAllFilters in Service");
+    if (isOnline()) {
+      filters = await serverRepo.getAllFilters();
+      logger.log(
+          Level.info, "getAllFilters called from server result: $filters");
+    }
+
+    return filters;
+  }
+
+  Future<List<TestEntity>> getEntityFilter(String filter) async {
+      var newEntities = await serverRepo.getEntityFilter(filter);
+      return newEntities;
+  }
+
 }
+

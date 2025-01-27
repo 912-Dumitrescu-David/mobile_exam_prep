@@ -9,9 +9,9 @@ const port = 3000;
 
 // In-memory list to store entities
 let TestEntities = [
-    { id: 1, name: 'Entity 1' },
-    { id: 2, name: 'Entity 2' },
-    { id: 3, name: 'Entity 3' }];
+    { id: 1, name: 'Entity 1' , filter: 'filter1'},
+    { id: 2, name: 'Entity 2' , filter: 'filter1'},
+    { id: 3, name: 'Entity 3' , filter: 'filter2'},];
 
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
@@ -44,6 +44,28 @@ const broadcast = (data) =>
 app.get('/entities', (req, res) => {
   res.status(200).json(TestEntities);
 });
+
+//return all filters
+app.get('/filters', (req, res) => {
+  let filters = TestEntities.map(entity => entity.filter);
+  filters = [...new Set(filters)];
+  res.status(200).json(filters);
+});
+
+app.get('/entities/:filter', (req,res)=> {
+ // Filter entities that match the provided filter value
+    const filter = req.params.filter;
+  const filteredEntities = TestEntities.filter(entity => entity.filter == filter);
+
+  // Return the filtered list
+  if (filteredEntities.length > 0) {
+    res.status(200).json(filteredEntities);
+  } else {
+    res.status(404).json({ message: "No entities found with the given filter." });
+    }
+});
+
+
 
 const getNextId = () => {
   if (TestEntities.length === 0) return 1;

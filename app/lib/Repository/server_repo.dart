@@ -1,8 +1,9 @@
 import 'package:app/Model/entity.dart';
+import 'package:app/Model/entityfilter.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
-const String url = "http://192.168.1.132:3000";
+const String url = "http://192.168.1.14:3000";
 
 class ServerRepo {
   static final dio = Dio();
@@ -80,4 +81,41 @@ class ServerRepo {
       return null;
     }
   }
+
+  Future<List<String?>> getAllFilters() async{
+    logger.log(Level.info,"called getAllFilters on server");
+    try{
+      final response= await dio.get('$url/filters');
+      logger.log(Level.info, "getALlFilters() response: $response");
+      if( response.statusCode == 200){
+        final List<dynamic> data = response.data;
+        return data.map((item) => item.toString()).toList();
+      }else {
+        logger.log(Level.error,
+            "getAllFilters server error: ${response.statusMessage}");
+        throw Exception(response.statusMessage);
+      }
+    } catch(e){
+      logger.log(Level.error,"getAllFilters() error: ${e}");
+      return [];
+    }
+
+  }
+
+  Future<List<TestEntity>> getEntityFilter(String filter) async {
+    logger.log(Level.info, "getEntityFilter() called to server with filter: $filter");
+    final response = await dio.get("$url/entities/$filter");
+    logger.log(Level.info, "getEntityFilter() server response : $response");
+    if (response.statusCode == 200) {
+      return (response.data as List)
+          .map((json) => TestEntity.fromJson(json))
+          .toList();
+    } else {
+      logger.log(Level.error,
+          "getAllEntities server error : ${response.statusMessage}");
+      throw Exception(response.statusMessage);
+    }
+  }
+
+
 }

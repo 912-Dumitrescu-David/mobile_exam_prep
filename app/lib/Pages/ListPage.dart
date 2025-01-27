@@ -29,7 +29,7 @@ class ListPageState extends State<ListPage> {
     super.initState();
     if (isFirstTime) _loadModels();
 
-    _webSocketService = WebSocketService(serverUrl: 'ws://192.168.1.132:3000');
+    _webSocketService = WebSocketService(serverUrl: 'ws://192.168.1.14:3000');
 
     _streamSubscription = _webSocketService.messageStream.listen((message) {
       _showMessageAlert(message);
