@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/Controller/controller.dart';
-import 'package:app/model/entity.dart';
+import 'package:app/Model/entity.dart';
+import 'package:logger/logger.dart';
 
 class ListPage extends StatefulWidget {
   @override
@@ -8,90 +9,85 @@ class ListPage extends StatefulWidget {
 }
 
 class ListPageState extends State<ListPage> {
-  Controller controller = Controller.instance;
+  final Controller controller = Controller.instance;
+  final Logger log = Logger();
+
   bool isConnected = false;
-  bool isInitialCheckDone = false;
-  List<TestEntity> items = [];
   bool isLoading = false;
+  List<TestEntity> models = [];
 
   @override
   void initState() {
     super.initState();
-    _checkConnection();
+    _loadModels();
   }
 
-  // Method to check network connection
-  Future<void> _checkConnection() async {
-    final connectivityResult = controller.isOnline();
-    setState(() {
-      isConnected = connectivityResult;
-      isInitialCheckDone = true;
-    });
-
-    if (isConnected) {
-      _fetchItems();
-    }
-  }
-
-  // Method to fetch items if online
-  Future<void> _fetchItems() async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<void> _loadModels() async {
+    log.i('Loading models...');
+    setState(() => isLoading = true);
 
     try {
-      items = (await controller.getAllEntities()).cast<TestEntity>();
-    } catch (error) {
-      // Handle error (optional: display a toast or snackbar)
-      items = [];
-    }
+      final connectivityResult = await controller.isOnline();
+      setState(() => isConnected = connectivityResult);
 
-    setState(() {
-      isLoading = false;
-    });
+      // Controller handles switching between local and server automatically
+      final fetchedModels = await controller.getAllEntities();
+      setState(() {
+        models = fetchedModels.cast<TestEntity>();
+        isLoading = false;
+      });
+
+      log.i('Models loaded: ${models.length}');
+    } catch (e) {
+      log.e('Error loading models: $e');
+      setState(() => isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('List Page'),
+        title: const Text('My Models'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadModels,
+          ),
+        ],
       ),
       body: isLoading
-          ? const Center(
-        child: CircularProgressIndicator(),
-      )
-          : isInitialCheckDone || isConnected
-          ? items.isEmpty
-          ? const Center(
-        child: Text(
-          'No items available.',
-          style: TextStyle(fontSize: 16),
-        ),
-      )
-          : ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('List'),
-          );
-        },
-      )
-          : Center(
+          ? const Center(child: CircularProgressIndicator())
+          : models.isEmpty
+          ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'You are offline.',
-              style: TextStyle(fontSize: 18),
+            Text(
+              isConnected
+                  ? 'No models available.'
+                  : 'You are offline.',
+              style: const TextStyle(fontSize: 18),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _checkConnection,
-              child: const Text('Retry'),
-            ),
+            if (!isConnected) ...[
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _loadModels,
+                child: const Text('Retry Connection'),
+              ),
+            ]
           ],
         ),
+      )
+          : ListView.builder(
+        itemCount: models.length,
+        itemBuilder: (context, index) {
+          final model = models[index];
+          return ListTile(
+            title: Text(model.name)
+            // Add more model details as needed
+          );
+        },
       ),
     );
   }

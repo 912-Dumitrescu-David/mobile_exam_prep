@@ -8,7 +8,10 @@ const app = express();
 const port = 3000;
 
 // In-memory list to store entities
-let TestEntities = [];
+let TestEntities = [
+    { id: 1, name: 'Entity 1' },
+    { id: 2, name: 'Entity 2' },
+    { id: 3, name: 'Entity 3' }];
 
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
