@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app/Controller/controller.dart';
 import 'package:app/Model/entity.dart';
 import 'package:logger/logger.dart';
+import 'package:app/Pages/AddEntityPage.dart';  // Import the new page
 
 class ListPage extends StatefulWidget {
   @override
@@ -14,12 +15,13 @@ class ListPageState extends State<ListPage> {
 
   bool isConnected = false;
   bool isLoading = false;
+  bool isFirstTime = true;
   List<TestEntity> models = [];
 
   @override
   void initState() {
     super.initState();
-    _loadModels();
+    if (isFirstTime) _loadModels();
   }
 
   Future<void> _loadModels() async {
@@ -30,17 +32,29 @@ class ListPageState extends State<ListPage> {
       final connectivityResult = await controller.isOnline();
       setState(() => isConnected = connectivityResult);
 
-      // Controller handles switching between local and server automatically
       final fetchedModels = await controller.getAllEntities();
       setState(() {
         models = fetchedModels.cast<TestEntity>();
         isLoading = false;
+        isFirstTime = false;
       });
 
       log.i('Models loaded: ${models.length}');
     } catch (e) {
       log.e('Error loading models: $e');
       setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> _navigateToAddPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddEntityPage()),
+    );
+
+    if (result == true) {
+      // Reload the list if an entity was added
+      _loadModels();
     }
   }
 
@@ -55,6 +69,10 @@ class ListPageState extends State<ListPage> {
             onPressed: _loadModels,
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddPage,
+        child: const Icon(Icons.add),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -84,7 +102,7 @@ class ListPageState extends State<ListPage> {
         itemBuilder: (context, index) {
           final model = models[index];
           return ListTile(
-            title: Text(model.name)
+            title: Text(model.name),
             // Add more model details as needed
           );
         },

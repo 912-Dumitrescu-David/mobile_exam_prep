@@ -45,30 +45,38 @@ app.get('/entities', (req, res) => {
   res.status(200).json(TestEntities);
 });
 
-// POST: Add a new entity
+const getNextId = () => {
+  if (TestEntities.length === 0) return 1;
+  const maxId = Math.max(...TestEntities.map(entity => entity.id));
+  return maxId + 1;
+};
+
 app.post('/entities', (req, res) => {
-  const { id, name } = req.body;
+   const { name } = req.body;
 
-  // Validation
-  if (!id || !name) {
-    return res.status(400).json({ message: 'ID and name are required' });
-  }
+   // Validation
+   if (!name) {
+     return res.status(400).json({ message: 'Name is required' });
+   }
 
-  // Check for duplicate id
-  if (TestEntities.some((TestEntity) => TestEntity.id === id)) {
-    return res.status(409).json({ message: 'Entity with this ID already exists' });
-  }
+   // Generate new ID automatically
+   const newId = getNextId();
 
-  // Add to the list
-  const newEntity = { id, name };
-  TestEntities.push(newEntity);
+   // Create new entity
+   const newEntity = {
+     id: newId,
+     name: name
+   };
 
-  // Notify connected users
-  // io.emit('entityAdded', newEntity);
-  broadcast('add')
+   // Add to array
+   TestEntities.push(newEntity);
 
-  res.status(201).json(newEntity);
-});
+   // Broadcast the new entity to all connected clients
+   broadcast({ type: 'entityAdded', entity: newEntity });
+
+   // Return success response
+   res.status(201).json(newEntity);
+ });
 
 // PUT: Update an entity by id
 app.put('/entities/:id', (req, res) => {

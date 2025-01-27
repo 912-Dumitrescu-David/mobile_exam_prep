@@ -64,12 +64,27 @@ class Abstractrepo {
   Future<TestEntity> addEntity(TestEntity entity) async {
     final db = await database;
     try {
-      final id = await db.insert("Exam", entity.toJson());
+      // Create a copy of the entity's JSON data
+      Map<String, dynamic> entityData = entity.toJson();
+
+      // Remove the id field if it exists
+      entityData.remove('id');
+
+      // Insert and get the auto-generated id
+      final id = await db.insert("Exam", entityData);
+
+      // Create a new entity with the assigned id
+      TestEntity newEntity = TestEntity.fromJson({
+        ...entityData,
+        'id': id,
+      });
+
       logger.log(Level.info, "addEntity() result: id $id");
+      return newEntity;
     } catch (e) {
       logger.log(Level.error, "addEntity() failed: $e");
+      rethrow; // Rethrow the error to handle it in the calling code
     }
-    return entity;
   }
 
   Future<bool> deleteEntity(int id) async {
