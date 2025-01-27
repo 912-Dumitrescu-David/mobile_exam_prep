@@ -20,6 +20,7 @@ class ListPageState extends State<ListPage> {
   bool isLoading = false;
   bool isFirstTime = true;
   List<TestEntity> models = [];
+  //--------------------
   late WebSocketService _webSocketService;
   late StreamSubscription<String> _streamSubscription;
 
@@ -54,7 +55,7 @@ class ListPageState extends State<ListPage> {
       },
     );
   }
-
+  //-----------------------------
 
 
   Future<void> _loadModels() async {
