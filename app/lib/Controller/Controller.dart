@@ -23,10 +23,10 @@ class Controller {
     required Function isOnline,
   }) {
     _instance ??= Controller._(
-        localRepo: localRepo,
-        serverRepo: serverRepo,
-        isOnline: isOnline,
-      );
+      localRepo: localRepo,
+      serverRepo: serverRepo,
+      isOnline: isOnline,
+    );
   }
 
   static Controller get instance {
@@ -67,11 +67,10 @@ class Controller {
       entities = await serverRepo.getAllEntities();
       logger.log(
           Level.info, "getAllEntities called from server result: $entities");
-    } else {
-      entities = await localRepo.getAllEntities();
-      logger.log(
-          Level.info, "getAllEntities called from local result: $entities");
     }
+    entities = await localRepo.getAllEntities();
+    logger.log(
+        Level.info, "getAllEntities called from local result: $entities");
     return entities;
   }
 
@@ -81,10 +80,9 @@ class Controller {
     if (isOnline()) {
       logger.log(Level.info, "addEntity called on server");
       addedEntity = await serverRepo.addEntity(entity);
-    } else {
-      logger.log(Level.info, "addEntity called on local");
-      addedEntity = await localRepo.addEntity(entity);
     }
+    logger.log(Level.info, "addEntity called on local");
+    addedEntity = await localRepo.addEntity(entity);
     logger.log(Level.info, "addEntity result: $entity");
     return addedEntity;
   }
@@ -95,10 +93,9 @@ class Controller {
     if (isOnline()) {
       logger.log(Level.info, "getById called on server");
       entity = await serverRepo.getById(id);
-    } else {
-      logger.log(Level.info, "getById called on local");
-      entity = await localRepo.getEntityById(id);
     }
+    logger.log(Level.info, "getById called on local");
+    entity = await localRepo.getEntityById(id);
     logger.log(Level.info, "getById result: $entity");
     return entity;
   }
@@ -109,10 +106,9 @@ class Controller {
     if (isOnline()) {
       logger.log(Level.info, "deleteEntity called on server");
       result = await serverRepo.deleteEntity(id);
-    } else {
-      logger.log(Level.info, "deleteEntity called on local");
-      result = await localRepo.deleteEntity(id);
     }
+    logger.log(Level.info, "deleteEntity called on local");
+    result = await localRepo.deleteEntity(id);
     logger.log(Level.info, "deleteEntity result: $result");
     return result;
   }
@@ -124,10 +120,9 @@ class Controller {
     if (isOnline()) {
       logger.log(Level.info, "updateEntity called on server");
       result = await serverRepo.updateEntity(entity.id, entity);
-    } else {
-      logger.log(Level.info, "updateEntity called on local");
-      result = await localRepo.updatedEntity(entity);
     }
+    logger.log(Level.info, "updateEntity called on local");
+    result = await localRepo.updatedEntity(entity);
     logger.log(Level.info, "updateEntity result: $result");
     return result;
   }
