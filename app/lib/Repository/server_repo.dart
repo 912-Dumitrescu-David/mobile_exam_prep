@@ -2,7 +2,7 @@ import 'package:app/Model/entity.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
-const String url = "http://localhost:3000";
+const String url = "http://192.168.1.14:3000";
 
 class ServerRepo {
   static final dio = Dio();

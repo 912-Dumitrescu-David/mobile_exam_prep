@@ -5,7 +5,6 @@ part 'entity.g.dart';
 
 @JsonSerializable()
 class TestEntity extends Entity {
-  @primaryKey
   final int id;
   final String name;
 
