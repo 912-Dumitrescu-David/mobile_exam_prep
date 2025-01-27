@@ -10,13 +10,17 @@ class WebSocketService {
   bool _isConnecting = false;
   static final Logger logger = Logger();
   
+  // Message stream controller
+  final _messageController = StreamController<String>.broadcast();
+  Stream<String> get messageStream => _messageController.stream;
+
   // Singleton instance
   static WebSocketService? _instance;
-  
+
   WebSocketService._internal(this.serverUrl) {
     _connect();
   }
-  
+
   factory WebSocketService({required String serverUrl}) {
     if (_instance == null) {
       _instance = WebSocketService._internal(serverUrl);
@@ -25,7 +29,7 @@ class WebSocketService {
     }
     return _instance!;
   }
-  
+
   Future<void> _connect() async {
     if (_isConnecting) {
       logger.log(Level.warning, "Connection attempt already in progress");
@@ -50,7 +54,8 @@ class WebSocketService {
       _channel.stream.listen(
         (message) {
           logger.log(Level.info, "Message received: $message");
-          // Handle incoming messages
+          // Broadcast the message to all listeners
+          _messageController.add(message.toString());
         },
         onDone: () {
           _isConnected = false;
@@ -72,15 +77,15 @@ class WebSocketService {
       _attemptReconnect();
     }
   }
-  
+
   bool isConnected() {
     return _isConnected && !_isConnecting;
   }
-  
+
   bool isConnecting() {
     return _isConnecting;
   }
-  
+
   Future<void> sendMessage(String message) async {
     if (isConnected()) {
       _channel.sink.add(message);
@@ -90,7 +95,7 @@ class WebSocketService {
       throw Exception("WebSocket is not connected");
     }
   }
-  
+
   void _attemptReconnect() {
     const retryInterval = Duration(seconds: 5);
     logger.log(Level.info, "Attempting to reconnect in ${retryInterval.inSeconds} seconds...");
@@ -101,7 +106,7 @@ class WebSocketService {
       }
     });
   }
-  
+
   Future<void> reconnect() async {
     if (!_isConnected && !_isConnecting) {
       logger.log(Level.info, "Manually attempting to reconnect to WebSocket...");
@@ -112,7 +117,7 @@ class WebSocketService {
       logger.log(Level.info, "WebSocket is already connected.");
     }
   }
-  
+
   void closeConnection() {
     if (_isConnected) {
       _channel.sink.close(status.normalClosure);
@@ -120,5 +125,11 @@ class WebSocketService {
       _isConnecting = false;
       logger.log(Level.info, "WebSocket connection closed manually.");
     }
+    _messageController.close();
+  }
+
+  void dispose() {
+    closeConnection();
+    _messageController.close();
   }
 }
